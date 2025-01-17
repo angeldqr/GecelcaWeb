@@ -37,7 +37,8 @@ def create_empleado():
         id_sede=data['id_sede'],
         id_empresa=data['id_empresa'],
         fecha_nacimiento=data['fecha_nacimiento'],
-        fecha_ingreso=data['fecha_ingreso']
+        fecha_ingreso=data['fecha_ingreso'],
+        password=data['password']  # Nuevo campo
     )
     db.session.add(nuevo_empleado)
     db.session.commit()
@@ -56,6 +57,7 @@ def update_empleado(id_empleado):
     empleado.segundo_nombre = data.get('segundo_nombre', empleado.segundo_nombre)
     empleado.primer_apellido = data.get('primer_apellido', empleado.primer_apellido)
     empleado.segundo_apellido = data.get('segundo_apellido', empleado.segundo_apellido)
+    empleado.password = data.get('password', empleado.password)  # Nuevo campo
 
     if 'id_cargo' in data and not Cargo.query.get(data['id_cargo']):
         return jsonify({"error": "El cargo especificado no existe"}), 404

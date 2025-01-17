@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from model.entities.Area import Area
 from model.db import db  # Importamos db desde extensions
 
@@ -41,3 +41,8 @@ def delete_area(id_area):
     db.session.delete(area)
     db.session.commit()
     return jsonify({"message": "Área eliminada"}), 200
+
+# Ruta para cargar la vista de áreas
+@area_bp.route('/view', methods=['GET'])
+def areas_view():
+    return render_template('welcome/home/forms/Areas.html')
