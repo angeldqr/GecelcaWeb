@@ -15,6 +15,7 @@ class Empleado(db.Model):
     id_empresa = db.Column(db.Integer, db.ForeignKey('empresas.id_empresa', ondelete="CASCADE"), nullable=False)
     fecha_nacimiento = db.Column(db.Date, nullable=False)
     fecha_ingreso = db.Column(db.Date, nullable=False)
+    password = db.Column(db.String(30), nullable=False)  # Nuevo campo
     activo = db.Column(db.Boolean, default=True)
 
     # Relaciones
@@ -22,7 +23,7 @@ class Empleado(db.Model):
     sede = db.relationship('Sede', backref=db.backref('empleados', lazy=True))
     empresa = db.relationship('Empresa', backref=db.backref('empleados', lazy=True))
 
-    def __init__(self, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, id_cargo, id_sede, id_empresa, fecha_nacimiento, fecha_ingreso, activo=True):
+    def __init__(self, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, id_cargo, id_sede, id_empresa, fecha_nacimiento, fecha_ingreso, password, activo=True):
         self.primer_nombre = primer_nombre
         self.segundo_nombre = segundo_nombre
         self.primer_apellido = primer_apellido
@@ -32,6 +33,7 @@ class Empleado(db.Model):
         self.id_empresa = id_empresa
         self.fecha_nacimiento = fecha_nacimiento
         self.fecha_ingreso = fecha_ingreso
+        self.password = password
         self.activo = activo
 
     def to_dict(self):
@@ -46,5 +48,6 @@ class Empleado(db.Model):
             "id_empresa": self.id_empresa,
             "fecha_nacimiento": str(self.fecha_nacimiento),
             "fecha_ingreso": str(self.fecha_ingreso),
+            "password": self.password,
             "activo": self.activo
         }
