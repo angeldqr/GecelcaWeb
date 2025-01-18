@@ -7,20 +7,22 @@ from model.db import db
 
 empleado_bp = Blueprint('empleado_bp', __name__)
 
-# Ruta para obtener todos los empleados
 @empleado_bp.route('/', methods=['GET'])
 def get_empleados():
+    empleados = Empleado.query.filter_by(activo=True).all()
+    return jsonify([empleado.to_dict() for empleado in empleados]), 200
+
+@empleado_bp.route('/all', methods=['GET'])
+def get_all_empleados():
     empleados = Empleado.query.all()
     return jsonify([empleado.to_dict() for empleado in empleados]), 200
 
-# Ruta para crear un empleado
 @empleado_bp.route('/', methods=['POST'])
 def create_empleado():
     data = request.get_json()
     if not data:
         return jsonify({"error": "Datos inválidos"}), 400
 
-    # Validaciones
     if not Cargo.query.get(data.get('id_cargo')):
         return jsonify({"error": "El cargo especificado no existe"}), 404
     if not Sede.query.get(data.get('id_sede')):
@@ -38,13 +40,12 @@ def create_empleado():
         id_empresa=data['id_empresa'],
         fecha_nacimiento=data['fecha_nacimiento'],
         fecha_ingreso=data['fecha_ingreso'],
-        password=data['password']  # Nuevo campo
+        password=data['password']
     )
     db.session.add(nuevo_empleado)
     db.session.commit()
     return jsonify(nuevo_empleado.to_dict()), 201
 
-# Ruta para actualizar un empleado
 @empleado_bp.route('/<int:id_empleado>', methods=['PUT'])
 def update_empleado(id_empleado):
     data = request.get_json()
@@ -52,12 +53,11 @@ def update_empleado(id_empleado):
     if not empleado:
         return jsonify({"error": "Empleado no encontrado"}), 404
 
-    # Actualizar los campos
     empleado.primer_nombre = data.get('primer_nombre', empleado.primer_nombre)
     empleado.segundo_nombre = data.get('segundo_nombre', empleado.segundo_nombre)
     empleado.primer_apellido = data.get('primer_apellido', empleado.primer_apellido)
     empleado.segundo_apellido = data.get('segundo_apellido', empleado.segundo_apellido)
-    empleado.password = data.get('password', empleado.password)  # Nuevo campo
+    empleado.password = data.get('password', empleado.password)
 
     if 'id_cargo' in data and not Cargo.query.get(data['id_cargo']):
         return jsonify({"error": "El cargo especificado no existe"}), 404
@@ -76,7 +76,6 @@ def update_empleado(id_empleado):
     db.session.commit()
     return jsonify(empleado.to_dict()), 200
 
-# Ruta para eliminar un empleado (inactivarlo)
 @empleado_bp.route('/<int:id_empleado>', methods=['DELETE'])
 def delete_empleado(id_empleado):
     empleado = Empleado.query.get(id_empleado)
@@ -85,3 +84,12 @@ def delete_empleado(id_empleado):
     empleado.activo = False
     db.session.commit()
     return jsonify({"message": "Empleado inactivado"}), 200
+
+@empleado_bp.route('/<int:id_empleado>/reactivate', methods=['PUT'])
+def reactivate_empleado(id_empleado):
+    empleado = Empleado.query.get(id_empleado)
+    if not empleado:
+        return jsonify({"error": "Empleado no encontrado"}), 404
+    empleado.activo = True
+    db.session.commit()
+    return jsonify({"message": "Empleado reactivado"}), 200

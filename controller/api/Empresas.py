@@ -4,13 +4,16 @@ from model.db import db
 
 empresa_bp = Blueprint('empresa_bp', __name__)
 
-# Ruta para obtener todas las empresas
 @empresa_bp.route('/', methods=['GET'])
 def get_empresas():
+    empresas = Empresa.query.filter_by(estado=True).all()
+    return jsonify([empresa.to_dict() for empresa in empresas]), 200
+
+@empresa_bp.route('/all', methods=['GET'])
+def get_all_empresas():
     empresas = Empresa.query.all()
     return jsonify([empresa.to_dict() for empresa in empresas]), 200
 
-# Ruta para crear una empresa
 @empresa_bp.route('/', methods=['POST'])
 def create_empresa():
     data = request.get_json()
@@ -21,7 +24,6 @@ def create_empresa():
     db.session.commit()
     return jsonify(nueva_empresa.to_dict()), 201
 
-# Ruta para actualizar una empresa
 @empresa_bp.route('/<int:id_empresa>', methods=['PUT'])
 def update_empresa(id_empresa):
     data = request.get_json()
@@ -29,15 +31,24 @@ def update_empresa(id_empresa):
     if not empresa:
         return jsonify({"error": "Empresa no encontrada"}), 404
     empresa.nombre_empresa = data.get('nombre_empresa', empresa.nombre_empresa)
+    empresa.estado = data.get('estado', empresa.estado)
     db.session.commit()
     return jsonify(empresa.to_dict()), 200
 
-# Ruta para eliminar una empresa
 @empresa_bp.route('/<int:id_empresa>', methods=['DELETE'])
 def delete_empresa(id_empresa):
     empresa = Empresa.query.get(id_empresa)
     if not empresa:
         return jsonify({"error": "Empresa no encontrada"}), 404
-    db.session.delete(empresa)
+    empresa.estado = False
     db.session.commit()
-    return jsonify({"message": "Empresa eliminada"}), 200
+    return jsonify({"message": "Empresa inactivada"}), 200
+
+@empresa_bp.route('/<int:id_empresa>/reactivate', methods=['PUT'])
+def reactivate_empresa(id_empresa):
+    empresa = Empresa.query.get(id_empresa)
+    if not empresa:
+        return jsonify({"error": "Empresa no encontrada"}), 404
+    empresa.estado = True
+    db.session.commit()
+    return jsonify({"message": "Empresa reactivada"}), 200
