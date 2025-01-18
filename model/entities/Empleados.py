@@ -15,8 +15,8 @@ class Empleado(db.Model):
     id_empresa = db.Column(db.Integer, db.ForeignKey('empresas.id_empresa', ondelete="CASCADE"), nullable=False)
     fecha_nacimiento = db.Column(db.Date, nullable=False)
     fecha_ingreso = db.Column(db.Date, nullable=False)
-    password = db.Column(db.String(30), nullable=False)  # Nuevo campo
-    activo = db.Column(db.Boolean, default=True)
+    password = db.Column(db.String(255), nullable=False)
+    activo = db.Column(db.Boolean, default=True, nullable=False)
 
     # Relaciones
     cargo = db.relationship('Cargo', backref=db.backref('empleados', lazy=True))

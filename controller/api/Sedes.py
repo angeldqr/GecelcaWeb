@@ -5,13 +5,16 @@ from model.db import db
 
 sede_bp = Blueprint('sede_bp', __name__)
 
-# Ruta para obtener todas las sedes
 @sede_bp.route('/', methods=['GET'])
 def get_sedes():
+    sedes = Sede.query.filter_by(estado=True).all()
+    return jsonify([sede.to_dict() for sede in sedes]), 200
+
+@sede_bp.route('/all', methods=['GET'])
+def get_all_sedes():
     sedes = Sede.query.all()
     return jsonify([sede.to_dict() for sede in sedes]), 200
 
-# Ruta para crear una sede
 @sede_bp.route('/', methods=['POST'])
 def create_sede():
     data = request.get_json()
@@ -27,7 +30,6 @@ def create_sede():
     db.session.commit()
     return jsonify(nueva_sede.to_dict()), 201
 
-# Ruta para actualizar una sede
 @sede_bp.route('/<int:id_sede>', methods=['PUT'])
 def update_sede(id_sede):
     data = request.get_json()
@@ -42,15 +44,24 @@ def update_sede(id_sede):
             return jsonify({"error": "La empresa especificada no existe"}), 404
         sede.id_empresa = data['id_empresa']
 
+    sede.estado = data.get('estado', sede.estado)
     db.session.commit()
     return jsonify(sede.to_dict()), 200
 
-# Ruta para eliminar una sede
 @sede_bp.route('/<int:id_sede>', methods=['DELETE'])
 def delete_sede(id_sede):
     sede = Sede.query.get(id_sede)
     if not sede:
         return jsonify({"error": "Sede no encontrada"}), 404
-    db.session.delete(sede)
+    sede.estado = False
     db.session.commit()
-    return jsonify({"message": "Sede eliminada"}), 200
+    return jsonify({"message": "Sede inactivada"}), 200
+
+@sede_bp.route('/<int:id_sede>/reactivate', methods=['PUT'])
+def reactivate_sede(id_sede):
+    sede = Sede.query.get(id_sede)
+    if not sede:
+        return jsonify({"error": "Sede no encontrada"}), 404
+    sede.estado = True
+    db.session.commit()
+    return jsonify({"message": "Sede reactivada"}), 200
