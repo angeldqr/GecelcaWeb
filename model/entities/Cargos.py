@@ -4,7 +4,7 @@ class Cargo(db.Model):
     __tablename__ = 'cargos'
     id_cargo = db.Column(db.Integer, primary_key=True)
     nombre_cargo = db.Column(db.String(100), nullable=False)
-    estado = db.Column(db.Boolean, default=True, nullable=False)  # Nuevo campo
+    estado = db.Column(db.Boolean, default=True, nullable=False)
 
     def __init__(self, nombre_cargo, estado=True):
         self.nombre_cargo = nombre_cargo
