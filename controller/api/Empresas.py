@@ -1,19 +1,29 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from model.entities.Empresas import Empresa
 from model.db import db
 
 empresa_bp = Blueprint('empresa_bp', __name__)
 
-@empresa_bp.route('/', methods=['GET'])
-def get_empresas():
-    empresas = Empresa.query.filter_by(estado=True).all()
-    return jsonify([empresa.to_dict() for empresa in empresas]), 200
-
+# Ruta para obtener todas las empresas (activas e inactivas)
 @empresa_bp.route('/all', methods=['GET'])
 def get_all_empresas():
     empresas = Empresa.query.all()
-    return jsonify([empresa.to_dict() for empresa in empresas]), 200
+    return jsonify([{
+        "id": empresa.id_empresa,
+        "nombre": empresa.nombre_empresa,
+        "estado": empresa.estado
+    } for empresa in empresas]), 200
 
+# Ruta para obtener solo empresas activas
+@empresa_bp.route('/', methods=['GET'])
+def get_empresas():
+    empresas = Empresa.query.filter_by(estado=True).all()  # Solo empresas activas
+    return jsonify([{
+        "id": empresa.id_empresa,
+        "nombre": empresa.nombre_empresa
+    } for empresa in empresas]), 200
+
+# Ruta para crear una empresa
 @empresa_bp.route('/', methods=['POST'])
 def create_empresa():
     data = request.get_json()
@@ -24,6 +34,7 @@ def create_empresa():
     db.session.commit()
     return jsonify(nueva_empresa.to_dict()), 201
 
+# Ruta para actualizar una empresa
 @empresa_bp.route('/<int:id_empresa>', methods=['PUT'])
 def update_empresa(id_empresa):
     data = request.get_json()
@@ -35,6 +46,7 @@ def update_empresa(id_empresa):
     db.session.commit()
     return jsonify(empresa.to_dict()), 200
 
+# Ruta para inactivar una empresa
 @empresa_bp.route('/<int:id_empresa>', methods=['DELETE'])
 def delete_empresa(id_empresa):
     empresa = Empresa.query.get(id_empresa)
@@ -44,6 +56,7 @@ def delete_empresa(id_empresa):
     db.session.commit()
     return jsonify({"message": "Empresa inactivada"}), 200
 
+# Ruta para reactivar una empresa
 @empresa_bp.route('/<int:id_empresa>/reactivate', methods=['PUT'])
 def reactivate_empresa(id_empresa):
     empresa = Empresa.query.get(id_empresa)
@@ -52,3 +65,8 @@ def reactivate_empresa(id_empresa):
     empresa.estado = True
     db.session.commit()
     return jsonify({"message": "Empresa reactivada"}), 200
+
+# Ruta para cargar la vista de empresas
+@empresa_bp.route('/view', methods=['GET'])
+def empresas_view():
+    return render_template('welcome/home/forms/Empresas.html')
