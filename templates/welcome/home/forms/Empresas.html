@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Áreas</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Areas.css') }}">
+    <title>Gestión de Empresas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome/home/Empresas.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="{{ url_for('static', filename='js/forms/Areas.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/forms/Empresas.js') }}" defer></script>
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="text-center">Gestión de Áreas</h2>
+    <h2 class="text-center">Gestión de Empresas</h2>
 
     <!-- Formulario de inserción -->
-    <form id="formArea" class="card p-3 my-3">
+    <form id="formEmpresa" class="card p-3 my-3">
         <div class="row">
             <div class="col-md-8">
-                <input type="text" id="nombre_area" class="form-control" placeholder="Escribe el nombre del área">
+                <input type="text" id="nombre_empresa" class="form-control" placeholder="Escribe el nombre de la empresa">
             </div>
             <div class="col-md-4">
                 <button type="submit" class="btn btn-primary w-100">+ Insertar</button>
@@ -24,22 +24,22 @@
         </div>
     </form>
 
-    <!-- Tabla de áreas -->
+    <!-- Tabla de empresas -->
     <div class="card">
         <div class="card-header bg-primary text-white">
-            Áreas
+            Empresas
         </div>
         <div class="card-body p-0">
             <table class="table table-bordered">
                 <thead class="text-center">
                 <tr>
-                    <th>Nombre del Área</th>
+                    <th>Nombre de la Empresa</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
-                <tbody id="tablaAreas" class="text-center">
-                    <!-- Áreas renderizadas dinámicamente -->
+                <tbody id="tablaEmpresas" class="text-center">
+                    <!-- Empresas renderizadas dinámicamente -->
                 </tbody>
             </table>
         </div>
@@ -53,19 +53,19 @@
     </div>
 </div>
 
-<!-- Modal para editar área -->
+<!-- Modal para editar empresa -->
 <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalEditarLabel">Editar Área</h5>
+                <h5 class="modal-title" id="modalEditarLabel">Editar Empresa</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="hidden" id="editar_id_area">
+                <input type="hidden" id="editar_id_empresa">
                 <div class="mb-3">
-                    <label for="editar_nombre_area" class="form-label">Nombre del Área</label>
-                    <input type="text" id="editar_nombre_area" class="form-control">
+                    <label for="editar_nombre_empresa" class="form-label">Nombre de la Empresa</label>
+                    <input type="text" id="editar_nombre_empresa" class="form-control">
                 </div>
             </div>
             <div class="modal-footer">
@@ -76,7 +76,7 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/empresas.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
