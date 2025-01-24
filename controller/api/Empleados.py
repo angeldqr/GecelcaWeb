@@ -25,10 +25,10 @@ def get_empleados():
 @empleado_bp.route('/', methods=['POST'])
 def create_empleado():
     data = request.get_json()
-    print("Datos recibidos del frontend:", data)  # Verifica qué llega del frontend
+    print("Datos recibidos del frontend:", data)
 
     required_fields = [
-        'primer_nombre', 'primer_apellido', 'id_cargo',
+        'primer_nombre', 'primer_apellido', 'correo_electronico', 'id_cargo',
         'id_sede', 'id_empresa', 'id_area',
         'fecha_nacimiento', 'fecha_ingreso'
     ]
@@ -42,6 +42,7 @@ def create_empleado():
             segundo_nombre=data.get('segundo_nombre'),
             primer_apellido=data['primer_apellido'],
             segundo_apellido=data.get('segundo_apellido'),
+            correo_electronico=data['correo_electronico'],  # Nuevo campo
             id_cargo=data['id_cargo'],
             id_sede=data['id_sede'],
             id_empresa=data['id_empresa'],
@@ -53,7 +54,7 @@ def create_empleado():
         db.session.commit()
         return jsonify(nuevo_empleado.to_dict()), 201
     except Exception as e:
-        print("Error al insertar el empleado:", e)  # Log completo del error
+        print("Error al insertar el empleado:", e)
         return jsonify({"error": "No se pudo insertar el empleado"}), 500
 
 # Ruta para actualizar un empleado
@@ -63,10 +64,12 @@ def update_empleado(id_empleado):
     empleado = Empleado.query.get(id_empleado)
     if not empleado:
         return jsonify({"error": "Empleado no encontrado"}), 404
+
     empleado.primer_nombre = data.get('primer_nombre', empleado.primer_nombre)
     empleado.segundo_nombre = data.get('segundo_nombre', empleado.segundo_nombre)
     empleado.primer_apellido = data.get('primer_apellido', empleado.primer_apellido)
     empleado.segundo_apellido = data.get('segundo_apellido', empleado.segundo_apellido)
+    empleado.correo_electronico = data.get('correo_electronico', empleado.correo_electronico)  # Nuevo campo
     empleado.id_cargo = data.get('id_cargo', empleado.id_cargo)
     empleado.id_sede = data.get('id_sede', empleado.id_sede)
     empleado.id_empresa = data.get('id_empresa', empleado.id_empresa)
