@@ -33,6 +33,11 @@
                 <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
                 <input type="text" id="segundo_apellido" class="form-control" placeholder="Ingrese el segundo apellido (opcional)">
             </div>
+            <!-- Campo de Correo Electrónico -->
+            <div class="col-md-12 mb-3">
+                <label for="correo_electronico" class="form-label">Correo Electrónico</label>
+                <input type="email" id="correo_electronico" class="form-control" placeholder="Ingrese el correo electrónico">
+            </div>
 
             <!-- Campos de Selección -->
             <div class="col-md-6 mb-3">
@@ -87,6 +92,7 @@
                 <thead class="text-center">
                 <tr>
                     <th>Nombre Completo</th>
+                    <th>Correo Electrónico</th>
                     <th>Cargo</th>
                     <th>Sede</th>
                     <th>Empresa</th>
@@ -122,7 +128,6 @@
                 <input type="hidden" id="editar_id_empleado">
                 <!-- Campos del formulario de edición -->
                 <div class="row">
-                    <!-- Reutilizamos los campos del formulario de inserción -->
                     <div class="col-md-6 mb-3">
                         <label for="editar_primer_nombre" class="form-label">Primer Nombre</label>
                         <input type="text" id="editar_primer_nombre" class="form-control" placeholder="Primer Nombre">
@@ -138,6 +143,11 @@
                     <div class="col-md-6 mb-3">
                         <label for="editar_segundo_apellido" class="form-label">Segundo Apellido</label>
                         <input type="text" id="editar_segundo_apellido" class="form-control" placeholder="Segundo Apellido">
+                    </div>
+                    <!-- Campo de Correo Electrónico en el Modal -->
+                    <div class="col-md-12 mb-3">
+                        <label for="editar_correo_electronico" class="form-label">Correo Electrónico</label>
+                        <input type="email" id="editar_correo_electronico" class="form-control" placeholder="Correo Electrónico">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="editar_id_cargo" class="form-label">Cargo</label>

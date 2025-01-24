@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const segundoNombre = document.getElementById("segundo_nombre");
     const primerApellido = document.getElementById("primer_apellido");
     const segundoApellido = document.getElementById("segundo_apellido");
+    const correoElectronico = document.getElementById("correo_electronico"); // Nuevo campo
     const idCargo = document.getElementById("id_cargo");
     const idSede = document.getElementById("id_sede");
     const idEmpresa = document.getElementById("id_empresa");
@@ -88,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tablaEmpleados.innerHTML += `
                 <tr>
                     <td>${empleado.primer_nombre} ${empleado.segundo_nombre || ""} ${empleado.primer_apellido} ${empleado.segundo_apellido || ""}</td>
+                    <td>${empleado.correo_electronico}</td> <!-- Nuevo campo -->
                     <td>${obtenerNombrePorId(empleado.id_cargo, cargos)}</td>
                     <td>${obtenerNombrePorId(empleado.id_sede, sedes)}</td>
                     <td>${obtenerNombrePorId(empleado.id_empresa, empresas)}</td>
@@ -137,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
             segundo_nombre: segundoNombre.value.trim(),
             primer_apellido: primerApellido.value.trim(),
             segundo_apellido: segundoApellido.value.trim(),
+            correo_electronico: correoElectronico.value.trim(), // Nuevo campo
             id_cargo: parseInt(idCargo.value),
             id_sede: parseInt(idSede.value),
             id_empresa: parseInt(idEmpresa.value),
