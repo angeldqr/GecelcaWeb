@@ -12,181 +12,143 @@
 <div class="container mt-5">
     <h2 class="text-center">Gestión de Empleados</h2>
 
-    <!-- Formulario de inserción -->
-    <form id="formEmpleado" class="card p-3 my-3">
-        <h5 class="text-primary mb-3">Registro de Empleados</h5>
-        <div class="row">
-            <!-- Campos de Nombres y Apellidos -->
-            <div class="col-md-6 mb-3">
-                <label for="primer_nombre" class="form-label">Primer Nombre</label>
-                <input type="text" id="primer_nombre" class="form-control" placeholder="Ingrese el primer nombre">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="segundo_nombre" class="form-label">Segundo Nombre</label>
-                <input type="text" id="segundo_nombre" class="form-control" placeholder="Ingrese el segundo nombre (opcional)">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="primer_apellido" class="form-label">Primer Apellido</label>
-                <input type="text" id="primer_apellido" class="form-control" placeholder="Ingrese el primer apellido">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
-                <input type="text" id="segundo_apellido" class="form-control" placeholder="Ingrese el segundo apellido (opcional)">
-            </div>
-            <!-- Campo de Correo Electrónico -->
-            <div class="col-md-12 mb-3">
-                <label for="correo_electronico" class="form-label">Correo Electrónico</label>
-                <input type="email" id="correo_electronico" class="form-control" placeholder="Ingrese el correo electrónico">
-            </div>
+    <!-- Navegación de pestañas -->
+    <ul class="nav nav-tabs" id="tabs">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#activos" id="tab-activos">Empleados Activos</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#inactivos" id="tab-inactivos">Empleados Inactivos</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#registro" id="tab-registro">Insertar Empleado</button>
+        </li>
+    </ul>
 
-            <!-- Campos de Selección -->
-            <div class="col-md-6 mb-3">
-                <label for="id_cargo" class="form-label">Cargo</label>
-                <select id="id_cargo" class="form-control">
-                    <option value="" disabled selected>Selecciona un cargo</option>
-                </select>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="id_sede" class="form-label">Sede</label>
-                <select id="id_sede" class="form-control">
-                    <option value="" disabled selected>Selecciona una sede</option>
-                </select>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="id_empresa" class="form-label">Empresa</label>
-                <select id="id_empresa" class="form-control">
-                    <option value="" disabled selected>Selecciona una empresa</option>
-                </select>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="id_area" class="form-label">Área</label>
-                <select id="id_area" class="form-control">
-                    <option value="" disabled selected>Selecciona un área</option>
-                </select>
-            </div>
-
-            <!-- Campos de Fecha -->
-            <div class="col-md-6 mb-3">
-                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-                <input type="date" id="fecha_nacimiento" class="form-control">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="fecha_ingreso" class="form-label">Fecha de Ingreso</label>
-                <input type="date" id="fecha_ingreso" class="form-control">
-            </div>
-        </div>
-
-        <!-- Botón de Inserción -->
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary w-50">+ Insertar</button>
-        </div>
-    </form>
-
-    <!-- Tabla de Empleados -->
-    <div class="card mt-4">
-        <div class="card-header bg-primary text-white">
-            Empleados
-        </div>
-        <div class="card-body p-0">
-            <table class="table table-bordered">
-                <thead class="text-center">
-                <tr>
-                    <th>Nombre Completo</th>
-                    <th>Correo Electrónico</th>
-                    <th>Cargo</th>
-                    <th>Sede</th>
-                    <th>Empresa</th>
-                    <th>Área</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody id="tablaEmpleados" class="text-center">
-                    <!-- Empleados renderizados dinámicamente -->
-                </tbody>
-            </table>
-        </div>
-        <div class="card-footer text-center">
-            <nav aria-label="Paginación">
-                <ul class="pagination justify-content-center" id="paginacion">
-                    <!-- Paginación generada dinámicamente -->
-                </ul>
-            </nav>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Editar -->
-<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalEditarLabel">Editar Empleado</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="editar_id_empleado">
-                <!-- Campos del formulario de edición -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_primer_nombre" class="form-label">Primer Nombre</label>
-                        <input type="text" id="editar_primer_nombre" class="form-control" placeholder="Primer Nombre">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_segundo_nombre" class="form-label">Segundo Nombre</label>
-                        <input type="text" id="editar_segundo_nombre" class="form-control" placeholder="Segundo Nombre">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_primer_apellido" class="form-label">Primer Apellido</label>
-                        <input type="text" id="editar_primer_apellido" class="form-control" placeholder="Primer Apellido">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_segundo_apellido" class="form-label">Segundo Apellido</label>
-                        <input type="text" id="editar_segundo_apellido" class="form-control" placeholder="Segundo Apellido">
-                    </div>
-                    <!-- Campo de Correo Electrónico en el Modal -->
-                    <div class="col-md-12 mb-3">
-                        <label for="editar_correo_electronico" class="form-label">Correo Electrónico</label>
-                        <input type="email" id="editar_correo_electronico" class="form-control" placeholder="Correo Electrónico">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_id_cargo" class="form-label">Cargo</label>
-                        <select id="editar_id_cargo" class="form-control">
-                            <option value="" disabled selected>Selecciona un Cargo</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_id_sede" class="form-label">Sede</label>
-                        <select id="editar_id_sede" class="form-control">
-                            <option value="" disabled selected>Selecciona una Sede</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_id_empresa" class="form-label">Empresa</label>
-                        <select id="editar_id_empresa" class="form-control">
-                            <option value="" disabled selected>Selecciona una Empresa</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_id_area" class="form-label">Área</label>
-                        <select id="editar_id_area" class="form-control">
-                            <option value="" disabled selected>Selecciona un Área</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-                        <input type="date" id="editar_fecha_nacimiento" class="form-control">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="editar_fecha_ingreso" class="form-label">Fecha de Ingreso</label>
-                        <input type="date" id="editar_fecha_ingreso" class="form-control">
-                    </div>
+    <div class="tab-content mt-4">
+        <!-- Empleados Activos -->
+        <div class="tab-pane fade show active" id="activos">
+            <div class="card">
+                <div class="card-header bg-primary text-white">Empleados Activos</div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered table-sm">
+                        <thead class="text-center">
+                        <tr>
+                            <th>Nombre Completo</th>
+                            <th>Correo Electrónico</th>
+                            <th>Cargo</th>
+                            <th>Sede</th>
+                            <th>Empresa</th>
+                            <th>Área</th>
+                            <th>F. Nacimiento</th>
+                            <th>F. Ingreso</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tablaActivos" class="text-center">
+                        <!-- Empleados activos renderizados dinámicamente -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" id="guardar-edicion" class="btn btn-success">Guardar cambios</button>
+        </div>
+
+        <!-- Empleados Inactivos -->
+        <div class="tab-pane fade" id="inactivos">
+            <div class="card">
+                <div class="card-header bg-danger text-white">Empleados Inactivos</div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered table-sm">
+                        <thead class="text-center">
+                        <tr>
+                            <th>Nombre Completo</th>
+                            <th>Correo Electrónico</th>
+                            <th>Cargo</th>
+                            <th>Sede</th>
+                            <th>Empresa</th>
+                            <th>Área</th>
+                            <th>F. Nacimiento</th>
+                            <th>F. Ingreso</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tablaInactivos" class="text-center">
+                        <!-- Empleados inactivos renderizados dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
+        </div>
+
+        <!-- Insertar Empleado -->
+        <div class="tab-pane fade" id="registro">
+            <form id="formEmpleado" class="card p-3">
+                <h5 class="text-primary mb-3">Registro de Empleados</h5>
+                <div class="row">
+                    <!-- Campos de Nombres y Apellidos -->
+                    <div class="col-md-6 mb-3">
+                        <label for="primer_nombre" class="form-label">Primer Nombre</label>
+                        <input type="text" id="primer_nombre" class="form-control" placeholder="Ingrese el primer nombre">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="segundo_nombre" class="form-label">Segundo Nombre</label>
+                        <input type="text" id="segundo_nombre" class="form-control" placeholder="Ingrese el segundo nombre (opcional)">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="primer_apellido" class="form-label">Primer Apellido</label>
+                        <input type="text" id="primer_apellido" class="form-control" placeholder="Ingrese el primer apellido">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
+                        <input type="text" id="segundo_apellido" class="form-control" placeholder="Ingrese el segundo apellido (opcional)">
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label for="correo_electronico" class="form-label">Correo Electrónico</label>
+                        <input type="email" id="correo_electronico" class="form-control" placeholder="Ingrese el correo electrónico">
+                    </div>
+
+                    <!-- Campos de Selección -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_cargo" class="form-label">Cargo</label>
+                        <select id="id_cargo" class="form-control">
+                            <option value="" disabled selected>Selecciona un cargo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_sede" class="form-label">Sede</label>
+                        <select id="id_sede" class="form-control">
+                            <option value="" disabled selected>Selecciona una sede</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_empresa" class="form-label">Empresa</label>
+                        <select id="id_empresa" class="form-control">
+                            <option value="" disabled selected>Selecciona una empresa</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_area" class="form-label">Área</label>
+                        <select id="id_area" class="form-control">
+                            <option value="" disabled selected>Selecciona un área</option>
+                        </select>
+                    </div>
+
+                    <!-- Campos de Fecha -->
+                    <div class="col-md-6 mb-3">
+                        <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                        <input type="date" id="fecha_nacimiento" class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="fecha_ingreso" class="form-label">Fecha de Ingreso</label>
+                        <input type="date" id="fecha_ingreso" class="form-control">
+                    </div>
+                </div>
+
+                <!-- Botón de Inserción -->
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary w-50">Guardar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

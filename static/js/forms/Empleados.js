@@ -1,14 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const tablaEmpleados = document.getElementById("tablaEmpleados");
-    const paginacion = document.getElementById("paginacion");
     const formEmpleado = document.getElementById("formEmpleado");
+
+    // Tablas
+    const tablaActivos = document.getElementById("tablaActivos");
+    const tablaInactivos = document.getElementById("tablaInactivos");
 
     // Campos del formulario de inserción
     const primerNombre = document.getElementById("primer_nombre");
     const segundoNombre = document.getElementById("segundo_nombre");
     const primerApellido = document.getElementById("primer_apellido");
     const segundoApellido = document.getElementById("segundo_apellido");
-    const correoElectronico = document.getElementById("correo_electronico"); // Nuevo campo
+    const correoElectronico = document.getElementById("correo_electronico");
     const idCargo = document.getElementById("id_cargo");
     const idSede = document.getElementById("id_sede");
     const idEmpresa = document.getElementById("id_empresa");
@@ -22,9 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let empresas = [];
     let areas = [];
     let empleados = [];
-
-    let paginaActual = 1;
-    const itemsPorPagina = 10;
 
     // Función para cargar opciones dinámicas
     const cargarOpciones = async () => {
@@ -64,11 +63,53 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await fetch("/api/empleados/all");
             if (!res.ok) throw new Error("Error al cargar los empleados");
             empleados = await res.json();
-            actualizarTabla();
+
+            // Filtrar empleados en activos e inactivos
+            const empleadosActivos = empleados.filter(emp => emp.estado === true);
+            const empleadosInactivos = empleados.filter(emp => emp.estado === false);
+
+            actualizarTabla(tablaActivos, empleadosActivos, true);
+            actualizarTabla(tablaInactivos, empleadosInactivos, false);
         } catch (error) {
             console.error("Error al cargar los empleados:", error);
             alert("Hubo un error al cargar los empleados.");
         }
+    };
+
+    // Función para actualizar tablas
+    const actualizarTabla = (tabla, datos, esActivo) => {
+        tabla.innerHTML = "";
+        datos.forEach(empleado => {
+            tabla.innerHTML += `
+                <tr>
+                    <td>${empleado.primer_nombre} ${empleado.segundo_nombre || ""} ${empleado.primer_apellido} ${empleado.segundo_apellido || ""}</td>
+                    <td>${empleado.correo_electronico}</td>
+                    <td>${obtenerNombrePorId(empleado.id_cargo, cargos)}</td>
+                    <td>${obtenerNombrePorId(empleado.id_sede, sedes)}</td>
+                    <td>${obtenerNombrePorId(empleado.id_empresa, empresas)}</td>
+                    <td>${obtenerNombrePorId(empleado.id_area, areas)}</td>
+                    <td>${formatearFecha(empleado.fecha_nacimiento)}</td>
+                    <td>${formatearFecha(empleado.fecha_ingreso)}</td>
+                    <td>
+                        ${
+                            esActivo
+                                ? `<button class="btn btn-warning btn-sm" onclick="editarEmpleado(${empleado.id_empleado})">Editar</button>
+                                   <button class="btn btn-danger btn-sm" onclick="cambiarEstado(${empleado.id_empleado}, false)">Inactivar</button>`
+                                : `<button class="btn btn-success btn-sm" onclick="cambiarEstado(${empleado.id_empleado}, true)">Activar</button>`
+                        }
+                    </td>
+                </tr>
+            `;
+        });
+    };
+
+    // Función para formatear fecha en dd/mm/aaaa
+    const formatearFecha = (fecha) => {
+        const dateObj = new Date(fecha);
+        const dia = String(dateObj.getDate()).padStart(2, "0");
+        const mes = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const anio = dateObj.getFullYear();
+        return `${dia}/${mes}/${anio}`;
     };
 
     // Función para obtener el nombre descriptivo por ID
@@ -77,60 +118,45 @@ document.addEventListener("DOMContentLoaded", () => {
         return item ? item.nombre : "Desconocido";
     };
 
-    // Función para actualizar la tabla de empleados
-    const actualizarTabla = () => {
-        tablaEmpleados.innerHTML = "";
-        const inicio = (paginaActual - 1) * itemsPorPagina;
-        const fin = inicio + itemsPorPagina;
+    // Función para cambiar estado de un empleado
+    window.cambiarEstado = async (idEmpleado, nuevoEstado) => {
+        try {
+            const res = await fetch(`/api/empleados/${idEmpleado}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ estado: nuevoEstado })
+            });
 
-        const datosPagina = empleados.slice(inicio, fin);
-
-        datosPagina.forEach(empleado => {
-            tablaEmpleados.innerHTML += `
-                <tr>
-                    <td>${empleado.primer_nombre} ${empleado.segundo_nombre || ""} ${empleado.primer_apellido} ${empleado.segundo_apellido || ""}</td>
-                    <td>${empleado.correo_electronico}</td> <!-- Nuevo campo -->
-                    <td>${obtenerNombrePorId(empleado.id_cargo, cargos)}</td>
-                    <td>${obtenerNombrePorId(empleado.id_sede, sedes)}</td>
-                    <td>${obtenerNombrePorId(empleado.id_empresa, empresas)}</td>
-                    <td>${obtenerNombrePorId(empleado.id_area, areas)}</td>
-                    <td>${empleado.estado ? "Activo" : "Inactivo"}</td>
-                    <td>
-                        ${
-                            empleado.estado
-                                ? `
-                                    <button class="btn btn-warning btn-sm" onclick="editarEmpleado(${empleado.id_empleado})">Editar</button>
-                                    <button class="btn btn-danger btn-sm" onclick="inactivarEmpleado(${empleado.id_empleado})">Inactivar</button>
-                                  `
-                                : `<button class="btn btn-success btn-sm" onclick="activarEmpleado(${empleado.id_empleado})">Activar</button>`
-                        }
-                    </td>
-                </tr>
-            `;
-        });
-
-        actualizarPaginacion();
-    };
-
-    // Función para actualizar la paginación
-    const actualizarPaginacion = () => {
-        paginacion.innerHTML = "";
-        const totalPaginas = Math.ceil(empleados.length / itemsPorPagina);
-
-        for (let i = 1; i <= totalPaginas; i++) {
-            paginacion.innerHTML += `
-                <button class="btn btn-primary btn-sm mx-1 ${i === paginaActual ? "active" : ""}" onclick="cambiarPagina(${i})">${i}</button>
-            `;
+            if (!res.ok) throw new Error("Error al cambiar el estado del empleado");
+            alert(`Empleado ${nuevoEstado ? "activado" : "inactivado"} correctamente.`);
+            cargarEmpleados();
+        } catch (error) {
+            console.error("Error al cambiar el estado del empleado:", error);
+            alert("Hubo un error al cambiar el estado del empleado.");
         }
     };
 
-    // Cambiar página
-    window.cambiarPagina = pagina => {
-        paginaActual = pagina;
-        actualizarTabla();
+    // Función para editar empleado
+    window.editarEmpleado = (idEmpleado) => {
+        const empleado = empleados.find(emp => emp.id_empleado === idEmpleado);
+        if (!empleado) return alert("Empleado no encontrado");
+
+        // Navegar a la pestaña de insertar empleado y llenar datos
+        document.querySelector('[data-tab="tab-insertar"]').click();
+        primerNombre.value = empleado.primer_nombre;
+        segundoNombre.value = empleado.segundo_nombre || "";
+        primerApellido.value = empleado.primer_apellido;
+        segundoApellido.value = empleado.segundo_apellido || "";
+        correoElectronico.value = empleado.correo_electronico;
+        idCargo.value = empleado.id_cargo;
+        idSede.value = empleado.id_sede;
+        idEmpresa.value = empleado.id_empresa;
+        idArea.value = empleado.id_area;
+        fechaNacimiento.value = empleado.fecha_nacimiento;
+        fechaIngreso.value = empleado.fecha_ingreso;
     };
 
-    // Crear un nuevo empleado
+    // Función para crear un nuevo empleado
     formEmpleado.addEventListener("submit", async e => {
         e.preventDefault();
 
@@ -139,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
             segundo_nombre: segundoNombre.value.trim(),
             primer_apellido: primerApellido.value.trim(),
             segundo_apellido: segundoApellido.value.trim(),
-            correo_electronico: correoElectronico.value.trim(), // Nuevo campo
+            correo_electronico: correoElectronico.value.trim(),
             id_cargo: parseInt(idCargo.value),
             id_sede: parseInt(idSede.value),
             id_empresa: parseInt(idEmpresa.value),
@@ -147,8 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
             fecha_nacimiento: fechaNacimiento.value,
             fecha_ingreso: fechaIngreso.value,
         };
-
-        console.log("Datos enviados al backend:", nuevoEmpleado);
 
         try {
             const res = await fetch("/api/empleados/", {
@@ -158,10 +182,9 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (!res.ok) throw new Error("Error al insertar el empleado");
-
             formEmpleado.reset();
-            cargarEmpleados();
             alert("Empleado insertado correctamente.");
+            cargarEmpleados();
         } catch (error) {
             console.error("Error al insertar el empleado:", error);
             alert("Hubo un error al insertar el empleado.");
