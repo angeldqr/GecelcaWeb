@@ -4,9 +4,10 @@ from email.mime.multipart import MIMEMultipart
 import psycopg2
 from datetime import datetime
 
-# Credenciales de Gmail
-remitente = "angelquinteror102@gmail.com"
-password = "dpns dtxy gcyr zqhy"
+# Credenciales de SendGrid
+remitente = "gcelkproject@hotmail.com"  # Tu correo de Microsoft
+sendgrid_user = "apikey"  # Usuario fijo de SendGrid
+sendgrid_api_key = "AFXK56P66BAQ65SK8XNVW7KG"  # Reemplaza con tu API Key de SendGrid
 
 # Configuración de la base de datos PostgreSQL
 db_config = {
@@ -37,13 +38,13 @@ try:
     cursor.execute(query, (dia_actual, mes_actual))
 
     # Obtener todos los empleados que cumplen años
-    empleados_cumple = cursor.fetchall()  # [(primer_nombre, segundo_nombre, primer_apellido, email), ...]
+    empleados_cumple = cursor.fetchall()  # [(primer_nombre, segundo_nombre, primer_apellido, correo_electronico), ...]
 
     for empleado in empleados_cumple:
         primer_nombre = empleado[0]
         segundo_nombre = empleado[1] if empleado[1] else ""
         primer_apellido = empleado[2]
-        email = empleado[3] if empleado[3] else ""
+        email = empleado[3]
 
         # Crear mensaje de felicitación
         asunto = "¡Feliz cumpleaños!"
@@ -66,10 +67,10 @@ try:
         mensaje.attach(MIMEText(cuerpo, "plain"))
 
         try:
-            # Enviar el correo
-            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            # Conectar al servidor SMTP de SendGrid
+            with smtplib.SMTP("smtp.sendgrid.net", 587) as server:
                 server.starttls()
-                server.login(remitente, password)
+                server.login(sendgrid_user, sendgrid_api_key)
                 server.sendmail(remitente, email, mensaje.as_string())
 
             print(f"Correo enviado con éxito a {primer_nombre} {primer_apellido} ({email})")
