@@ -1,47 +1,67 @@
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ Areas.js se ha cargado correctamente.");
+
+    // 🌟 Variables globales
     const tablaAreas = document.getElementById("tablaAreas");
     const paginacion = document.getElementById("paginacion");
     const formArea = document.getElementById("formArea");
     const modalEditar = new bootstrap.Modal(document.getElementById("modalEditar"));
     const inputEditarNombre = document.getElementById("editar_nombre_area");
     const guardarEdicionBtn = document.getElementById("guardar-edicion");
+
     let areaIdEnEdicion = null;
-
-    const itemsPorPagina = 10; // Número de áreas por página
-    let paginaActual = 1;
     let datos = [];
+    const itemsPorPagina = 10;
+    let paginaActual = 1;
 
-    // Actualizar la tabla con datos paginados
+    // 🔄 Definir `cargarAreas()` globalmente
+    window.cargarAreas = async () => {
+        try {
+            console.log("🔄 Cargando áreas desde el backend...");
+            const res = await fetch("/api/areas/all");
+            if (!res.ok) throw new Error("Error al cargar las áreas");
+
+            datos = await res.json();
+            console.log("✅ Datos de áreas recibidos:", datos);
+            actualizarTabla();
+        } catch (error) {
+            console.error("❌ Error cargando las áreas:", error);
+        }
+    };
+
+    // 📝 Actualizar la tabla con los datos paginados
     const actualizarTabla = () => {
+        if (!tablaAreas) {
+            console.error("❌ La tabla de áreas no se encontró.");
+            return;
+        }
+
         tablaAreas.innerHTML = "";
         const inicio = (paginaActual - 1) * itemsPorPagina;
         const fin = inicio + itemsPorPagina;
-
         const datosPagina = datos.slice(inicio, fin);
 
         datosPagina.forEach(area => {
-            tablaAreas.innerHTML += `
-                <tr>
-                    <td>${area.nombre}</td>
-                    <td>${area.estado ? "Activo" : "Inactivo"}</td>
-                    <td>
-                        ${
-                            area.estado
-                                ? `
-                                    <button class="btn btn-warning btn-sm" onclick="editarArea(${area.id}, '${area.nombre}')">Editar</button>
-                                    <button class="btn btn-danger btn-sm" onclick="inactivarArea(${area.id})">Inactivar</button>
-                                  `
-                                : `<button class="btn btn-success btn-sm" onclick="activarArea(${area.id})">Activar</button>`
-                        }
-                    </td>
-                </tr>
+            const fila = document.createElement("tr");
+            fila.innerHTML = `
+                <td>${area.nombre}</td>
+                <td>${area.estado ? "Activo" : "Inactivo"}</td>
+                <td>
+                    ${
+                        area.estado
+                            ? `<button class="btn btn-warning btn-sm" onclick="editarArea(${area.id}, '${area.nombre}')">✏️ Editar</button>
+                               <button class="btn btn-danger btn-sm" onclick="inactivarArea(${area.id})">🛑 Inactivar</button>`
+                            : `<button class="btn btn-success btn-sm" onclick="activarArea(${area.id})">✅ Activar</button>`
+                    }
+                </td>
             `;
+            tablaAreas.appendChild(fila);
         });
 
         actualizarPaginacion();
     };
 
-    // Actualizar los botones de paginación
+    // 📌 Paginación
     const actualizarPaginacion = () => {
         paginacion.innerHTML = "";
         const totalPaginas = Math.ceil(datos.length / itemsPorPagina);
@@ -53,31 +73,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Cambiar de página
     window.cambiarPagina = (pagina) => {
         paginaActual = pagina;
         actualizarTabla();
     };
 
-    // Cargar todas las áreas del servidor
-    const cargarAreas = async () => {
-        try {
-            const res = await fetch("/api/areas/all"); // Usar la ruta que devuelve todas las áreas
-            if (!res.ok) throw new Error("Error al cargar las áreas");
-            datos = await res.json(); // Guardar los datos en la variable global
-            actualizarTabla(); // Renderizar la tabla con los datos cargados
-        } catch (error) {
-            console.error("Error al cargar las áreas:", error);
-            alert("Hubo un problema al cargar las áreas. Intenta nuevamente.");
-        }
-    };
-
-    // Crear una nueva área
+    // ➕ Agregar nueva área
     formArea.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const nombre = document.getElementById("nombre_area").value;
+        const nombre = document.getElementById("nombre_area").value.trim();
 
-        if (!nombre.trim()) {
+        if (!nombre) {
             alert("El nombre del área no puede estar vacío.");
             return;
         }
@@ -88,25 +94,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ nombre_area: nombre }),
             });
+
             formArea.reset();
-            cargarAreas(); // Recargar las áreas después de crear una nueva
+            cargarAreas();
         } catch (error) {
-            console.error("Error al insertar el área:", error);
+            console.error("❌ Error al insertar el área:", error);
         }
     });
 
-    // Editar un área
+    // ✏️ Editar un área
     window.editarArea = (id, nombre) => {
         inputEditarNombre.value = nombre;
         areaIdEnEdicion = id;
-        modalEditar.show(); // Mostrar el modal de edición
+        modalEditar.show();
     };
 
-    // Guardar los cambios de edición
     guardarEdicionBtn.addEventListener("click", async () => {
-        const nuevoNombre = inputEditarNombre.value;
+        const nuevoNombre = inputEditarNombre.value.trim();
 
-        if (!nuevoNombre.trim()) {
+        if (!nuevoNombre) {
             alert("El nombre del área no puede estar vacío.");
             return;
         }
@@ -117,44 +123,43 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ nombre_area: nuevoNombre }),
             });
-            alert("Área actualizada correctamente.");
-            areaIdEnEdicion = null;
+
             modalEditar.hide();
             cargarAreas();
         } catch (error) {
-            console.error("Error al editar el área:", error);
+            console.error("❌ Error al editar el área:", error);
         }
     });
 
-    // Inactivar un área
+    // 🛑 Inactivar área
     window.inactivarArea = async (id) => {
         if (!confirm("¿Estás seguro de inactivar esta área?")) return;
 
         try {
-            await fetch(`/api/areas/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ estado: false }), // Actualizar el estado a inactivo
-            });
+            await fetch(`/api/areas/${id}`, { method: "DELETE" });
             cargarAreas();
         } catch (error) {
-            console.error("Error al inactivar el área:", error);
+            console.error("❌ Error al inactivar el área:", error);
         }
     };
 
-    // Activar un área
+    // ✅ Activar área
     window.activarArea = async (id) => {
         try {
-            await fetch(`/api/areas/${id}/reactivate`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-            });
+            await fetch(`/api/areas/${id}/reactivate`, { method: "PUT" });
             cargarAreas();
         } catch (error) {
-            console.error("Error al activar el área:", error);
+            console.error("❌ Error al activar el área:", error);
         }
     };
 
-    // Inicializar la carga de áreas
-    cargarAreas();
+    // 🚀 Ejecutar cargarAreas() después de que la vista se haya cargado
+    setTimeout(() => {
+        if (typeof window.cargarAreas === "function") {
+            console.log("🚀 Ejecutando cargarAreas()...");
+            cargarAreas();
+        } else {
+            console.error("❌ cargarAreas() sigue sin estar definida.");
+        }
+    }, 300);
 });
