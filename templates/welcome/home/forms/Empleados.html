@@ -85,7 +85,6 @@
             <form id="formEmpleado" class="card p-3">
                 <h5 class="text-primary mb-3">Registro de Empleados</h5>
                 <div class="row">
-                    <!-- Campos de Nombres y Apellidos -->
                     <div class="col-md-6 mb-3">
                         <label for="primer_nombre" class="form-label">Primer Nombre</label>
                         <input type="text" id="primer_nombre" class="form-control" placeholder="Ingrese el primer nombre">
@@ -106,8 +105,6 @@
                         <label for="correo_electronico" class="form-label">Correo Electrónico</label>
                         <input type="email" id="correo_electronico" class="form-control" placeholder="Ingrese el correo electrónico">
                     </div>
-
-                    <!-- Campos de Selección -->
                     <div class="col-md-6 mb-3">
                         <label for="id_cargo" class="form-label">Cargo</label>
                         <select id="id_cargo" class="form-control">
@@ -132,8 +129,6 @@
                             <option value="" disabled selected>Selecciona un área</option>
                         </select>
                     </div>
-
-                    <!-- Campos de Fecha -->
                     <div class="col-md-6 mb-3">
                         <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
                         <input type="date" id="fecha_nacimiento" class="form-control">
@@ -143,12 +138,85 @@
                         <input type="date" id="fecha_ingreso" class="form-control">
                     </div>
                 </div>
-
-                <!-- Botón de Inserción -->
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary w-50">Guardar</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Empleado -->
+<div class="modal fade" id="modalEditarEmpleado" tabindex="-1" aria-labelledby="modalEditarEmpleadoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarEmpleadoLabel">Editar Empleado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarEmpleado">
+                    <input type="hidden" id="editar_id_empleado">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_primer_nombre" class="form-label">Primer Nombre</label>
+                            <input type="text" id="editar_primer_nombre" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_segundo_nombre" class="form-label">Segundo Nombre</label>
+                            <input type="text" id="editar_segundo_nombre" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_primer_apellido" class="form-label">Primer Apellido</label>
+                            <input type="text" id="editar_primer_apellido" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_segundo_apellido" class="form-label">Segundo Apellido</label>
+                            <input type="text" id="editar_segundo_apellido" class="form-control">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="editar_correo_electronico" class="form-label">Correo Electrónico</label>
+                            <input type="email" id="editar_correo_electronico" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_id_cargo" class="form-label">Cargo</label>
+                            <select id="editar_id_cargo" class="form-control">
+                                <option value="" disabled selected>Selecciona un Cargo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_id_sede" class="form-label">Sede</label>
+                            <select id="editar_id_sede" class="form-control">
+                                <option value="" disabled selected>Selecciona una Sede</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_id_empresa" class="form-label">Empresa</label>
+                            <select id="editar_id_empresa" class="form-control">
+                                <option value="" disabled selected>Selecciona una Empresa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_id_area" class="form-label">Área</label>
+                            <select id="editar_id_area" class="form-control">
+                                <option value="" disabled selected>Selecciona un Área</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" id="editar_fecha_nacimiento" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar_fecha_ingreso" class="form-label">Fecha de Ingreso</label>
+                            <input type="date" id="editar_fecha_ingreso" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
