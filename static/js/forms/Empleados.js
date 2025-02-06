@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const formEmpleado = document.getElementById("formEmpleado");
+    const formEditarEmpleado = document.getElementById("formEditarEmpleado");
 
     // Tablas
     const tablaActivos = document.getElementById("tablaActivos");
@@ -17,6 +18,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const idArea = document.getElementById("id_area");
     const fechaNacimiento = document.getElementById("fecha_nacimiento");
     const fechaIngreso = document.getElementById("fecha_ingreso");
+
+    // Modal de edición
+    const modalEditarEmpleado = new bootstrap.Modal(document.getElementById("modalEditarEmpleado"));
+    const editarIdEmpleado = document.getElementById("editar_id_empleado");
+
+    const editarPrimerNombre = document.getElementById("editar_primer_nombre");
+    const editarSegundoNombre = document.getElementById("editar_segundo_nombre");
+    const editarPrimerApellido = document.getElementById("editar_primer_apellido");
+    const editarSegundoApellido = document.getElementById("editar_segundo_apellido");
+    const editarCorreoElectronico = document.getElementById("editar_correo_electronico");
+    const editarIdCargo = document.getElementById("editar_id_cargo");
+    const editarIdSede = document.getElementById("editar_id_sede");
+    const editarIdEmpresa = document.getElementById("editar_id_empresa");
+    const editarIdArea = document.getElementById("editar_id_area");
+    const editarFechaNacimiento = document.getElementById("editar_fecha_nacimiento");
+    const editarFechaIngreso = document.getElementById("editar_fecha_ingreso");
 
     // Listas dinámicas para mostrar nombres en lugar de IDs
     let cargos = [];
@@ -51,6 +68,11 @@ document.addEventListener("DOMContentLoaded", () => {
             cargarSelect(idSede, sedes, "id", "nombre");
             cargarSelect(idEmpresa, empresas, "id", "nombre");
             cargarSelect(idArea, areas, "id", "nombre");
+
+            cargarSelect(editarIdCargo, cargos, "id", "nombre");
+            cargarSelect(editarIdSede, sedes, "id", "nombre");
+            cargarSelect(editarIdEmpresa, empresas, "id", "nombre");
+            cargarSelect(editarIdArea, areas, "id", "nombre");
         } catch (error) {
             console.error("Error al cargar las opciones dinámicas:", error);
             alert("Hubo un error al cargar las opciones dinámicas.");
@@ -136,28 +158,65 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Función para editar empleado
+    // Función para abrir el modal de edición con datos
     window.editarEmpleado = (idEmpleado) => {
         const empleado = empleados.find(emp => emp.id_empleado === idEmpleado);
         if (!empleado) return alert("Empleado no encontrado");
 
-        // Navegar a la pestaña de insertar empleado y llenar datos
-        document.querySelector('[data-tab="tab-insertar"]').click();
-        primerNombre.value = empleado.primer_nombre;
-        segundoNombre.value = empleado.segundo_nombre || "";
-        primerApellido.value = empleado.primer_apellido;
-        segundoApellido.value = empleado.segundo_apellido || "";
-        correoElectronico.value = empleado.correo_electronico;
-        idCargo.value = empleado.id_cargo;
-        idSede.value = empleado.id_sede;
-        idEmpresa.value = empleado.id_empresa;
-        idArea.value = empleado.id_area;
-        fechaNacimiento.value = empleado.fecha_nacimiento;
-        fechaIngreso.value = empleado.fecha_ingreso;
+        editarIdEmpleado.value = idEmpleado;
+        editarPrimerNombre.value = empleado.primer_nombre;
+        editarSegundoNombre.value = empleado.segundo_nombre || "";
+        editarPrimerApellido.value = empleado.primer_apellido;
+        editarSegundoApellido.value = empleado.segundo_apellido || "";
+        editarCorreoElectronico.value = empleado.correo_electronico;
+        editarIdCargo.value = empleado.id_cargo;
+        editarIdSede.value = empleado.id_sede;
+        editarIdEmpresa.value = empleado.id_empresa;
+        editarIdArea.value = empleado.id_area;
+        editarFechaNacimiento.value = empleado.fecha_nacimiento;
+        editarFechaIngreso.value = empleado.fecha_ingreso;
+
+        modalEditarEmpleado.show();
     };
 
+    // Función para guardar cambios desde el modal
+    formEditarEmpleado.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const idEmpleado = editarIdEmpleado.value;
+
+        const empleadoData = {
+            primer_nombre: editarPrimerNombre.value.trim(),
+            segundo_nombre: editarSegundoNombre.value.trim(),
+            primer_apellido: editarPrimerApellido.value.trim(),
+            segundo_apellido: editarSegundoApellido.value.trim(),
+            correo_electronico: editarCorreoElectronico.value.trim(),
+            id_cargo: parseInt(editarIdCargo.value),
+            id_sede: parseInt(editarIdSede.value),
+            id_empresa: parseInt(editarIdEmpresa.value),
+            id_area: parseInt(editarIdArea.value),
+            fecha_nacimiento: editarFechaNacimiento.value,
+            fecha_ingreso: editarFechaIngreso.value,
+        };
+
+        try {
+            const res = await fetch(`/api/empleados/${idEmpleado}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(empleadoData),
+            });
+
+            if (!res.ok) throw new Error("Error al editar el empleado");
+            alert("Empleado editado correctamente.");
+            modalEditarEmpleado.hide();
+            cargarEmpleados();
+        } catch (error) {
+            console.error("Error al editar el empleado:", error);
+            alert("Hubo un error al editar el empleado.");
+        }
+    });
+
     // Función para crear un nuevo empleado
-    formEmpleado.addEventListener("submit", async e => {
+    formEmpleado.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const nuevoEmpleado = {
@@ -182,8 +241,8 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (!res.ok) throw new Error("Error al insertar el empleado");
-            formEmpleado.reset();
             alert("Empleado insertado correctamente.");
+            formEmpleado.reset();
             cargarEmpleados();
         } catch (error) {
             console.error("Error al insertar el empleado:", error);
