@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Mejorado</title>
+    <title>Admin Panel</title>
     <!-- BOX ICONS -->
     <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet">
     <!-- CUSTOM CSS -->
@@ -12,59 +13,48 @@
     <script src="{{ url_for('static', filename='js/Dashboard.js') }}" defer></script>
 </head>
 <body>
-    <div class="menu-dashboard">
-        <!-- TOP MENU -->
-        <div class="top-menu">
-            <div class="logo">
-                <img src="https://via.placeholder.com/40" alt="Logo">
-                <span>Angel</span>
+
+    <div class="admin-container">
+        <!-- SIDEBAR -->
+        <div class="menu-dashboard">
+            <div class="top-menu">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo Admin">
+                    <span>Admin</span>
+                </div>
+                <div class="toggle">
+                    <i class='bx bx-menu'></i>
+                </div>
             </div>
-            <div class="toggle">
-                <i class='bx bx-menu'></i>
+
+            <!-- MENU -->
+            <div class="menu">
+                <div class="enlace" data-route="{{ url_for('empleado_bp.empleados_view') }}">
+                    <i class="bx bx-user"></i><span>Empleados</span>
+                </div>
+                <div class="enlace" data-route="{{ url_for('area_bp.areas_view') }}">
+                    <i class="bx bx-buildings"></i><span>Áreas</span>
+                </div>
+                <div class="enlace" data-route="{{ url_for('empresa_bp.empresas_view') }}">
+                    <i class="bx bx-briefcase"></i><span>Empresas</span>
+                </div>
+                <div class="enlace" data-route="{{ url_for('cargo_bp.cargos_view') }}">
+                    <i class="bx bx-id-card"></i><span>Cargos</span>
+                </div>
+                <div class="enlace" data-route="{{ url_for('sede_bp.sedes_view') }}">
+                    <i class="bx bx-map"></i><span>Sedes</span>
+                </div>
             </div>
         </div>
 
-        <!-- INPUT SEARCH -->
-        <div class="input-search">
-            <i class='bx bx-search'></i>
-            <input type="text" class="input" placeholder="Buscar...">
-        </div>
-
-        <!-- MENU -->
-        <div class="menu">
-            <div class="enlace activo">
-                <i class="bx bx-user"></i>
-                <span>Empleados</span>
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="main-content">
+            <h2>Panel Administrativo</h2>
+            <div id="content-area">
+                <p>Selecciona una opción del menú para visualizar su contenido.</p>
             </div>
-            <div class="enlace">
-                <i class="bx bx-grid-alt"></i>
-                <span>Áreas</span>
-            </div>
-            <div class="enlace">
-                <i class="bx bx-briefcase"></i>
-                <span>Cargos</span>
-            </div>
-            <div class="enlace">
-                <i class="bx bx-buildings"></i>
-                <span>Empresas</span>
-            </div>
-            <div class="enlace">
-                <i class="bx bx-map"></i>
-                <span>Sedes</span>
-            </div>
-            <div class="enlace">
-                <i class="bx bx-cog"></i>
-                <span>Configuración</span>
-            </div>
-        </div>
-
-        <!-- FOOTER -->
-        <div class="footer">
-            <button class="modo-oscuro" id="toggle-dark">
-                <i class="bx bx-moon"></i>
-                <span>Modo Oscuro</span>
-            </button>
         </div>
     </div>
+
 </body>
 </html>
