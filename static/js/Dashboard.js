@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+    alert("El script se ha cargado correctamente.");
+    console.log("El script Dashboard.js se está ejecutando.");
     const toggle = document.querySelector(".toggle");
     const menuDashboard = document.querySelector(".menu-dashboard");
     const iconoMenu = toggle.querySelector("i");
@@ -11,40 +13,45 @@ document.addEventListener("DOMContentLoaded", () => {
         iconoMenu.classList.replace(isOpen ? "bx-menu" : "bx-x", isOpen ? "bx-x" : "bx-menu");
     });
 
-    // Cargar contenido dinámicamente
+    // Cargar contenido dinámicamente con mejor manejo de errores
     async function cargarContenido(route, enlaceSeleccionado) {
         contentArea.innerHTML = `<p class="loading">Cargando...</p>`;
 
         try {
-            const response = await fetch(route, {
-                headers: { "Accept": "application/json" }
-            });
-
+            const response = await fetch(route);
             if (!response.ok) throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
 
             const contentType = response.headers.get("content-type");
 
             if (contentType && contentType.includes("application/json")) {
                 const data = await response.json();
-                if (route.includes("/empleados/")) {
-                    renderizarEmpleados(data);
-                } else {
-                    contentArea.innerHTML = `<p>Se cargó el contenido correctamente.</p>`;
-                }
+                renderizarVista(route, data);
             } else {
                 contentArea.innerHTML = await response.text();
             }
 
             enlacesMenu.forEach(enlace => enlace.classList.remove("activo"));
             enlaceSeleccionado.classList.add("activo");
-
         } catch (error) {
             console.error("Error al cargar los datos:", error);
             contentArea.innerHTML = `<p class="error">Error al cargar el contenido. Ver la consola para más detalles.</p>`;
         }
     }
 
-    // Renderizar empleados en la tabla
+    // Renderizar vistas de acuerdo con los datos obtenidos
+    function renderizarVista(route, data) {
+        switch (true) {
+            case route.includes("/api/empleados"): renderizarEmpleados(data); break;
+            case route.includes("/api/areas"): renderizarAreas(data); break;
+            case route.includes("/api/cargos"): renderizarCargos(data); break;
+            case route.includes("/api/empresas"): renderizarEmpresas(data); break;
+            case route.includes("/api/sedes"): renderizarSedes(data); break;
+            default:
+                contentArea.innerHTML = `<p>Se cargó el contenido correctamente.</p>`;
+        }
+    }
+
+    // Renderizar Empleados
     function renderizarEmpleados(empleados) {
         let tabla = `
             <div class="tabla-contenedor">
@@ -87,4 +94,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (route) cargarContenido(route, enlace);
         });
     });
+
+    // Cargar la primera sección por defecto
+    const primerEnlace = document.querySelector(".enlace");
+    if (primerEnlace) {
+        const primeraRuta = primerEnlace.getAttribute("data-route");
+        cargarContenido(primeraRuta, primerEnlace);
+    }
 });
